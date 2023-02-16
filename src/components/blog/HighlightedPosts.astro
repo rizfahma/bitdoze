@@ -1,0 +1,48 @@
+---
+import Picture from '~/components/core/Picture.astro';
+
+import { findPostsByIds } from '~/utils/posts';
+import { findImage } from '~/utils/images';
+import { getPermalink } from '~/utils/permalinks';
+
+const ids = [
+	'best-astrojs-online-courses',
+	'link-github-with-ssh-maco-linux',
+	'install-nodejs-using-nvm-macos-ubuntu',
+	'gatsby-js-online-courses',
+	'embed-youtube-videos-to-gatsby',
+	'benchmark-cloud-servers',
+];
+
+const items = await Promise.all(
+	(await findPostsByIds(ids)).map(async (item) => ({ ...item, image: await findImage(item.image) }))
+);
+---
+
+<section class="px-2 py-2 mx-auto max-w-6xl lg:py-5">
+	<div><h3 class="text-center text-5xl pb-5">Latest Articles</h3></div>
+	<div class="grid gap-6 row-gap-5 md:grid-cols-2 lg:grid-cols-3 -mb-3">
+		{
+			items.map((post) => (
+				<article class="shadow-lg  dark:shadow-lg mb-1 transition hover:scale-105 duration-300">
+					<Picture
+						src={post.image}
+						class="object-cover aspect-video w-full mb-6 rounded-t-lg shadow-lg bg-gray-400 dark:bg-slate-700"
+						widths={[300, 900]}
+						sizes="(max-width: 900px) 400px, 900px"
+						alt={post.title}
+						aspectRatio="16:9"
+					/>
+					<h3 class="mb-2  p-2 s text-xl font-bold leading-snug sm:text-2xl font-heading">
+						<a
+							href={getPermalink(post.slug, 'type') + '/'}
+							class="hover:text-primary-600 underline underline-offset-4 decoration-1 decoration-dotted transition ease-in duration-200"
+						>
+							{post.title}
+						</a>
+					</h3>
+				</article>
+			))
+		}
+	</div>
+</section>
